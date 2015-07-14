@@ -15,14 +15,15 @@ func newFeedGetter(feed *Feed) *feedGetter {
 	return getter
 }
 
-func (getter *feedGetter) retrieveNewItems() ([]*rss.Item, error) {
+func (getter *feedGetter) retrieveNewItems() ([]Item, error) {
 	if err := getter.feedConnector.Fetch(getter.feed.Url, nil); err != nil {
 		return nil, err
 	}
-	newItems := make([]*rss.Item, 0, len(getter.items))
+	newItems := make([]Item, 0, len(getter.items))
 	for _, rssItem := range getter.items {
 		if pubDate, _ := rssItem.ParsedPubDate(); pubDate.After(getter.feed.lastSync) {
-			newItems = append(newItems, rssItem)
+			item := newItemFromRss(rssItem)
+			newItems = append(newItems, *item)
 		}
 	}
 	return newItems, nil
