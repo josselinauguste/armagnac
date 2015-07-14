@@ -8,12 +8,12 @@ import (
 )
 
 func TestGetNewItems(t *testing.T) {
-	feed := NewFeed("http://lachaineguitare.com/feed/")
+	feed := newFeed("http://lachaineguitare.com/feed/")
 	now := time.Now()
 	feed.lastSync = now.AddDate(0, 0, -5)
 
-	retriever := NewFeedGetter(feed)
-	newItems, err := retriever.RetrieveNewItems()
+	retriever := newFeedGetter(feed)
+	newItems, err := retriever.retrieveNewItems()
 
 	assert.Nil(t, err)
 	assert.NotEmpty(t, newItems)

@@ -3,10 +3,10 @@ package feeds
 import "time"
 
 type Feed struct {
-	url      string
+	Url      string
 	lastSync time.Time
 }
 
-func NewFeed(url string) *Feed {
+func newFeed(url string) *Feed {
 	return &Feed{url, time.Time{}}
 }

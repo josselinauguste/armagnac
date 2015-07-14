@@ -2,32 +2,32 @@ package feeds
 
 import rss "github.com/jteeuwen/go-pkg-rss"
 
-type FeedGetter struct {
+type feedGetter struct {
 	feed          *Feed
 	feedConnector *rss.Feed
 	items         []*rss.Item
 }
 
-func NewFeedGetter(feed *Feed) *FeedGetter {
-	retriever := new(FeedGetter)
-	retriever.feed = feed
-	retriever.feedConnector = rss.NewWithHandlers(5, true, nil, retriever)
-	return retriever
+func newFeedGetter(feed *Feed) *feedGetter {
+	getter := new(feedGetter)
+	getter.feed = feed
+	getter.feedConnector = rss.NewWithHandlers(5, true, nil, getter)
+	return getter
 }
 
-func (retriever *FeedGetter) RetrieveNewItems() ([]*rss.Item, error) {
-	if err := retriever.feedConnector.Fetch(retriever.feed.url, nil); err != nil {
+func (getter *feedGetter) retrieveNewItems() ([]*rss.Item, error) {
+	if err := getter.feedConnector.Fetch(getter.feed.Url, nil); err != nil {
 		return nil, err
 	}
-	newItems := make([]*rss.Item, 0, len(retriever.items))
-	for _, item := range retriever.items {
-		if pubDate, _ := item.ParsedPubDate(); pubDate.After(retriever.feed.lastSync) {
-			newItems = append(newItems, item)
+	newItems := make([]*rss.Item, 0, len(getter.items))
+	for _, rssItem := range getter.items {
+		if pubDate, _ := rssItem.ParsedPubDate(); pubDate.After(getter.feed.lastSync) {
+			newItems = append(newItems, rssItem)
 		}
 	}
 	return newItems, nil
 }
 
-func (retriever *FeedGetter) ProcessItems(f *rss.Feed, ch *rss.Channel, newitems []*rss.Item) {
-	retriever.items = append(retriever.items, newitems...)
+func (getter *feedGetter) ProcessItems(f *rss.Feed, ch *rss.Channel, newitems []*rss.Item) {
+	getter.items = append(getter.items, newitems...)
 }
