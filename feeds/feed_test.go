@@ -13,4 +13,5 @@ func TestNewFeed(t *testing.T) {
 
 	assert.NotNil(t, feed)
 	assert.Equal(t, feed.url, url)
+	assert.True(t, feed.lastSync.IsZero())
 }
