@@ -15,7 +15,7 @@ func newFeedGetter(feed *Feed) *feedGetter {
 	return getter
 }
 
-func (getter *feedGetter) retrieveNewItems() ([]Item, error) {
+func (getter *feedGetter) getNewItems() ([]Item, error) {
 	if err := getter.feedConnector.Fetch(getter.feed.Url, nil); err != nil {
 		return nil, err
 	}

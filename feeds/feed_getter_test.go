@@ -13,7 +13,7 @@ func TestGetNewItems(t *testing.T) {
 	feed.lastSync = now.AddDate(0, 0, -5)
 
 	retriever := newFeedGetter(feed)
-	newItems, err := retriever.retrieveNewItems()
+	newItems, err := retriever.getNewItems()
 
 	assert.Nil(t, err)
 	assert.NotEmpty(t, newItems)
