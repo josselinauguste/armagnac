@@ -14,10 +14,14 @@ type Item struct {
 }
 
 func newItemFromRss(rssItem *rss.Item) *Item {
-	url := rssItem.Links[0].Href
-	publicationDate, err := rssItem.ParsedPubDate()
-	if err != nil {
-		publicationDate = time.Now()
+	item := &Item{Title: rssItem.Title, Excerpt: rssItem.Description}
+	if len(rssItem.Links) > 0 {
+		item.Url = rssItem.Links[0].Href
 	}
-	return &Item{Title: rssItem.Title, Url: url, Excerpt: rssItem.Description, PublicationDate: publicationDate}
+	if publicationDate, err := rssItem.ParsedPubDate(); err != nil {
+		item.PublicationDate = time.Now()
+	} else {
+		item.PublicationDate = publicationDate
+	}
+	return item
 }
