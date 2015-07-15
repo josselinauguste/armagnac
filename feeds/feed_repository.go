@@ -2,7 +2,7 @@ package feeds
 
 type feedRepository interface {
 	GetAll() []*Feed
-	Add(feed *Feed)
+	Persist(feed *Feed)
 }
 
 var currentFeedRepository feedRepository

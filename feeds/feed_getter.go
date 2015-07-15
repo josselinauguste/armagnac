@@ -26,8 +26,10 @@ func (getter *feedGetter) getNewItems() ([]Item, error) {
 			newItems = append(newItems, *item)
 			if pubDate.After(getter.feed.lastSync) {
 				getter.feed.lastSync = pubDate
+			}
 		}
 	}
+	currentFeedRepository.Persist(getter.feed)
 	return newItems, nil
 }
 

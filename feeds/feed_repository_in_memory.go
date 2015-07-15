@@ -14,7 +14,12 @@ func (repository *feedRepositoryInMemory) GetAll() []*Feed {
 	return repository.feeds
 }
 
-func (repository *feedRepositoryInMemory) Add(feed *Feed) {
+func (repository *feedRepositoryInMemory) Persist(feed *Feed) {
+	for _, storedFeed := range repository.feeds {
+		if feed == storedFeed {
+			return
+		}
+	}
 	repository.feeds = append(repository.feeds, feed)
 }
 

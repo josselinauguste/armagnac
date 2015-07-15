@@ -11,7 +11,7 @@ func TestExecute(t *testing.T) {
 	feed := newFeed("http://lachaineguitare.com/feed/")
 	now := time.Now()
 	feed.lastSync = now.AddDate(0, 0, -5)
-	currentFeedRepository.Add(feed)
+	currentFeedRepository.Persist(feed)
 	query := &NewItemsQuery{}
 
 	query.Execute()
