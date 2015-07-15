@@ -4,20 +4,37 @@ type NewItemsQuery struct {
 	NewItems map[Feed][]Item
 }
 
+type message struct {
+	feed  Feed
+	items []Item
+}
+
 func (query *NewItemsQuery) Execute() {
-	query.NewItems = make(map[Feed][]Item)
 	feeds := currentFeedRepository.GetAll()
+	query.updateQueryFeedsItems(feeds)
+}
+
+func (query *NewItemsQuery) updateQueryFeedsItems(feeds []*Feed) {
+	ch := make(chan message)
 	for _, feed := range feeds {
-		query.NewItems[*feed] = query.getFeedItems(feed)
+		go query.getFeedItems(feed, ch)
+	}
+	query.NewItems = make(map[Feed][]Item)
+	for i := 0; i < len(feeds); i++ {
+		r := <-ch
+		if r.items != nil {
+			query.NewItems[r.feed] = r.items
+		}
 	}
 }
 
-func (query *NewItemsQuery) getFeedItems(feed *Feed) []Item {
+func (query *NewItemsQuery) getFeedItems(feed *Feed, ch chan message) {
 	getter := newFeedGetter(feed)
 	newItems, err := getter.getNewItems()
 	if err != nil {
 		//TODO log
-		return nil
+		ch <- message{}
+	} else {
+		ch <- message{*feed, newItems}
 	}
-	return newItems
 }
