@@ -16,7 +16,7 @@ func newFeedGetter(feed *Feed) *feedGetter {
 }
 
 func (getter *feedGetter) getNewItems() ([]Item, error) {
-	if err := getter.feedConnector.Fetch(getter.feed.Url, nil); err != nil {
+	if err := getter.feedConnector.Fetch(getter.feed.Uri, nil); err != nil {
 		return nil, err
 	}
 	newItems := make([]Item, 0, len(getter.items))
