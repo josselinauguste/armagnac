@@ -10,7 +10,8 @@ import (
 func TestGetNewItems(t *testing.T) {
 	feed := newFeed("http://lachaineguitare.com/feed/")
 	now := time.Now()
-	feed.lastSync = now.AddDate(0, 0, -5)
+	lastSync := now.AddDate(0, 0, -5)
+	feed.lastSync = lastSync
 
 	retriever := newFeedGetter(feed)
 	newItems, err := retriever.getNewItems()
@@ -18,4 +19,5 @@ func TestGetNewItems(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotEmpty(t, newItems)
 	assert.True(t, len(newItems) < 10)
+	assert.True(t, feed.lastSync.After(lastSync))
 }

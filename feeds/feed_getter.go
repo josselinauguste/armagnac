@@ -24,6 +24,8 @@ func (getter *feedGetter) getNewItems() ([]Item, error) {
 		if pubDate, _ := rssItem.ParsedPubDate(); pubDate.After(getter.feed.lastSync) {
 			item := newItemFromRss(rssItem)
 			newItems = append(newItems, *item)
+			if pubDate.After(getter.feed.lastSync) {
+				getter.feed.lastSync = pubDate
 		}
 	}
 	return newItems, nil
