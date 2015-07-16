@@ -9,9 +9,14 @@ type message struct {
 	items []Item
 }
 
-func (query *NewItemsQuery) Execute() {
+func NewNewItemsQuery() *NewItemsQuery {
+	return &NewItemsQuery{}
+}
+
+func (query *NewItemsQuery) Execute() error {
 	feeds := currentFeedRepository.GetAll()
 	query.updateQueryFeedsItems(feeds)
+	return nil
 }
 
 func (query *NewItemsQuery) updateQueryFeedsItems(feeds []*Feed) {
