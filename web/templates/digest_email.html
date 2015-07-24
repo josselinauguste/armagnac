@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+    <style type="text/css">
+      body {
+        font-weight: 300;
+        font-family: 'Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;
+        font-size: 16px;
+        color: #565656;
+        line-height: 1.5em;
+      }
+      h1 {
+        font-weight: 300;
+        font-family: 'Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;
+        color: #333333;
+        margin-bottom: 1.2em;
+      }
+      h2 {
+        font-weight: 300;
+        font-family: 'Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;
+        color: #333333;
+      }
+      a {
+        color: #6633cc;
+        text-decoration: none;
+      }
+      footer {
+        text-align: center;
+        margin-top: 4em;
+        font-family: Helvetica,Arial,sans-serif;
+        clear: both;
+      }
+      footer small {
+        margin-top: 2em;
+      }
+      hr {
+        border: 0;
+        height: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    {{ range $feedPresenter := .Feeds }}
+      <h1>{{$feedPresenter.Feed.Title}}</h1>
+      {{ range $item := $feedPresenter.Items }}
+        <h2><<a href="{{$item.Url}}" target="_blank">{{$item.Title}}</a></h2>
+        <p>{{$item.Excerpt}}</p>
+        <hr>
+      {{ end }}
+    {{ end }}
+    <footer>
+      <small>This digest is provided by <a href="http://www.armagnac.io">armagnac.io</a>.</small>
+    </footer>
+  </body>
+</html>

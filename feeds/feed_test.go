@@ -9,7 +9,7 @@ import (
 func TestNewFeed(t *testing.T) {
 	url := "http://salut.com/flux.rss"
 
-	feed := newFeed(url)
+	feed := NewFeed(url)
 
 	assert.NotNil(t, feed)
 	assert.Equal(t, feed.Uri, url)

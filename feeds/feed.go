@@ -7,6 +7,6 @@ type Feed struct {
 	lastSync time.Time
 }
 
-func newFeed(uri string) *Feed {
+func NewFeed(uri string) *Feed {
 	return &Feed{uri, time.Time{}}
 }

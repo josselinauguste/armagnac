@@ -8,7 +8,7 @@ import (
 )
 
 func TestExecute(t *testing.T) {
-	feed := newFeed("http://lachaineguitare.com/feed/")
+	feed := NewFeed("http://lachaineguitare.com/feed/")
 	now := time.Now()
 	feed.lastSync = now.AddDate(0, 0, -5)
 	currentFeedRepository.Persist(feed)
