@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/josselinauguste/armagnac/feeds"
+	"github.com/josselinauguste/armagnac/feeds/query"
 	"github.com/josselinauguste/magicbus"
 )
 
@@ -22,7 +22,7 @@ func newDigestResource(bus magicbus.Bus) *digestResource {
 }
 
 func (resource digestResource) createAndSendDigestHandler(rw http.ResponseWriter, r *http.Request) {
-	query := feeds.NewNewItemsQuery()
+	query := query.NewNewItemsQuery()
 	err := resource.bus.Send(query)
 	if err != nil {
 		//TODO log

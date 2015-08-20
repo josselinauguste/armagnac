@@ -1,12 +1,15 @@
-package feeds
+package query
+
+import "github.com/josselinauguste/armagnac/feeds/domain"
+import "github.com/josselinauguste/armagnac/feeds/repository"
 
 type NewItemsQuery struct {
-	NewItems map[Feed][]Item
+	NewItems map[domain.Feed][]domain.Item
 }
 
 type message struct {
-	feed  Feed
-	items []Item
+	feed  domain.Feed
+	items []domain.Item
 }
 
 func NewNewItemsQuery() *NewItemsQuery {
@@ -14,17 +17,17 @@ func NewNewItemsQuery() *NewItemsQuery {
 }
 
 func (query *NewItemsQuery) Execute() error {
-	feeds := currentFeedRepository.GetAll()
+	feeds := repository.CurrentFeedRepository.GetAll()
 	query.updateQueryFeedsItems(feeds)
 	return nil
 }
 
-func (query *NewItemsQuery) updateQueryFeedsItems(feeds []*Feed) {
+func (query *NewItemsQuery) updateQueryFeedsItems(feeds []*domain.Feed) {
 	ch := make(chan message)
 	for _, feed := range feeds {
 		go query.getFeedItems(feed, ch)
 	}
-	query.NewItems = make(map[Feed][]Item)
+	query.NewItems = make(map[domain.Feed][]domain.Item)
 	for i := 0; i < len(feeds); i++ {
 		r := <-ch
 		if r.items != nil {
@@ -33,7 +36,7 @@ func (query *NewItemsQuery) updateQueryFeedsItems(feeds []*Feed) {
 	}
 }
 
-func (query *NewItemsQuery) getFeedItems(feed *Feed, ch chan message) {
+func (query *NewItemsQuery) getFeedItems(feed *domain.Feed, ch chan message) {
 	getter := newFeedGetter(feed)
 	newItems, err := getter.getNewItems()
 	if err != nil {

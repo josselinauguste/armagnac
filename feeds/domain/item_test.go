@@ -1,4 +1,4 @@
-package feeds
+package domain
 
 import (
 	"testing"
@@ -17,7 +17,7 @@ func TestNewItemFromRss(t *testing.T) {
 		Links:       []*rss.Link{&rss.Link{Href: "http://www.salut.com/le-titre"}},
 	}
 
-	item := newItemFromRss(&rssItem)
+	item := NewItemFromRss(&rssItem)
 
 	assert.NotNil(t, item)
 	assert.Equal(t, rssItem.Title, item.Title)
@@ -36,7 +36,7 @@ func TestMappingItemWithoutPubDateFailsGracefully(t *testing.T) {
 		Links:       []*rss.Link{&rss.Link{Href: "http://www.salut.com/le-titre"}},
 	}
 
-	item := newItemFromRss(&rssItem)
+	item := NewItemFromRss(&rssItem)
 
 	assert.NotNil(t, item)
 	assert.InDelta(t, time.Now().Unix(), item.PublicationDate.Unix(), 10)
@@ -51,7 +51,7 @@ func TestMappingItemWithoutUrlFailsGracefully(t *testing.T) {
 		Links:       []*rss.Link{},
 	}
 
-	item := newItemFromRss(&rssItem)
+	item := NewItemFromRss(&rssItem)
 
 	assert.NotNil(t, item)
 	assert.Empty(t, item.Url)

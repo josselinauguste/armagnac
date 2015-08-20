@@ -1,10 +1,10 @@
-package feeds
+package domain
 
 import "time"
 
 type Feed struct {
 	Uri      string
-	lastSync time.Time
+	LastSync time.Time
 }
 
 func NewFeed(uri string) *Feed {

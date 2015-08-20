@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/josselinauguste/armagnac/feeds"
+	"github.com/josselinauguste/armagnac/feeds/query"
 	"github.com/josselinauguste/magicbus"
 
 	"github.com/stretchr/testify/mock"
@@ -22,7 +22,7 @@ func (m *FakeBus) Send(command magicbus.Command) error {
 
 func TestCreateAndSendDigest(t *testing.T) {
 	fakeBus := new(FakeBus)
-	fakeBus.On("Send", feeds.NewNewItemsQuery()).Return(nil)
+	fakeBus.On("Send", query.NewNewItemsQuery()).Return(nil)
 	resource := newDigestResource(fakeBus)
 	request, _ := http.NewRequest("POST", "/digests", strings.NewReader(``))
 	response := NewFakeResponse(t)

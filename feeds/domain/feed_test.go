@@ -1,4 +1,4 @@
-package feeds
+package domain
 
 import (
 	"testing"
@@ -13,5 +13,5 @@ func TestNewFeed(t *testing.T) {
 
 	assert.NotNil(t, feed)
 	assert.Equal(t, feed.Uri, url)
-	assert.True(t, feed.lastSync.IsZero())
+	assert.True(t, feed.LastSync.IsZero())
 }

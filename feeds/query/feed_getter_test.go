@@ -1,17 +1,19 @@
-package feeds
+package query
 
 import (
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/josselinauguste/armagnac/feeds/domain"
 )
 
 func TestGetNewItems(t *testing.T) {
-	feed := NewFeed("http://lachaineguitare.com/feed/")
+	feed := domain.NewFeed("http://lachaineguitare.com/feed/")
 	now := time.Now()
 	lastSync := now.AddDate(0, 0, -5)
-	feed.lastSync = lastSync
+	feed.LastSync = lastSync
 
 	retriever := newFeedGetter(feed)
 	newItems, err := retriever.getNewItems()
@@ -19,5 +21,5 @@ func TestGetNewItems(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotEmpty(t, newItems)
 	assert.True(t, len(newItems) < 10)
-	assert.True(t, feed.lastSync.After(lastSync))
+	assert.True(t, feed.LastSync.After(lastSync))
 }

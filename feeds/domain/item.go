@@ -1,4 +1,4 @@
-package feeds
+package domain
 
 import (
 	"time"
@@ -13,7 +13,7 @@ type Item struct {
 	PublicationDate time.Time
 }
 
-func newItemFromRss(rssItem *rss.Item) *Item {
+func NewItemFromRss(rssItem *rss.Item) *Item {
 	item := &Item{Title: rssItem.Title, Excerpt: rssItem.Description}
 	if len(rssItem.Links) > 0 {
 		item.Url = rssItem.Links[0].Href
