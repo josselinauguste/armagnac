@@ -9,11 +9,12 @@ import (
 )
 
 func TestNewDigestPresenter(t *testing.T) {
-	query := query.NewNewItemsQuery()
-	query.NewItems = make(map[domain.Feed][]domain.Item)
 	feed := domain.NewFeed("http://salut.com")
+	feed.ID = "id"
+	query := query.NewNewItemsQuery()
+	query.Feeds = []*domain.Feed{feed}
 	items := make([]domain.Item, 1)
-	query.NewItems[*feed] = items
+	query.NewItems[feed.ID] = items
 
 	presenter := newDigestPresenter(*query)
 

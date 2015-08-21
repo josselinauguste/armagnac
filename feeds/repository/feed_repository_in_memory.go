@@ -12,17 +12,18 @@ func newFeedRepositoryInMemory() feedRepository {
 	return &feedRepositoryInMemory{make([]*domain.Feed, 0)}
 }
 
-func (repository *feedRepositoryInMemory) GetAll() []*domain.Feed {
-	return repository.feeds
+func (repository *feedRepositoryInMemory) GetAll() ([]*domain.Feed, error) {
+	return repository.feeds, nil
 }
 
-func (repository *feedRepositoryInMemory) Persist(feed *domain.Feed) {
+func (repository *feedRepositoryInMemory) Persist(feed *domain.Feed) error {
 	for _, storedFeed := range repository.feeds {
 		if feed == storedFeed {
-			return
+			return nil
 		}
 	}
 	repository.feeds = append(repository.feeds, feed)
+	return nil
 }
 
 func init() {

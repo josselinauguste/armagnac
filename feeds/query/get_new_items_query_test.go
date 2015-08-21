@@ -14,11 +14,13 @@ func TestExecute(t *testing.T) {
 	feed := domain.NewFeed("http://lachaineguitare.com/feed/")
 	now := time.Now()
 	feed.LastSync = now.AddDate(0, 0, -5)
-	repository.CurrentFeedRepository.Persist(feed)
-	query := &NewItemsQuery{}
+	err := repository.CurrentFeedRepository.Persist(feed)
+	assert.Nil(t, err)
+	query := NewNewItemsQuery()
 
-	query.Execute()
+	err = query.Execute()
 
+	assert.Nil(t, err)
 	assert.NotEmpty(t, query.NewItems)
-	assert.NotEmpty(t, query.NewItems[*feed])
+	assert.NotEmpty(t, query.NewItems[feed.ID])
 }

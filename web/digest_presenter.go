@@ -18,9 +18,9 @@ type (
 
 func newDigestPresenter(query query.NewItemsQuery) *DigestPresenter {
 	presenter := &DigestPresenter{}
-	presenter.Feeds = make([]FeedPresenter, 0, len(query.NewItems))
-	for k := range query.NewItems {
-		feedPresenter := FeedPresenter{k, query.NewItems[k]}
+	presenter.Feeds = make([]FeedPresenter, 0, len(query.Feeds))
+	for _, feed := range query.Feeds {
+		feedPresenter := FeedPresenter{*feed, query.NewItems[feed.ID]}
 		presenter.Feeds = append(presenter.Feeds, feedPresenter)
 	}
 
