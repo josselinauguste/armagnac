@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"path"
@@ -25,7 +26,7 @@ func (resource digestResource) createAndSendDigestHandler(rw http.ResponseWriter
 	query := query.NewNewItemsQuery()
 	err := resource.bus.Send(query)
 	if err != nil {
-		//TODO log
+		fmt.Println("ERROR: error while sending to bus: %#v", err.Error())
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}

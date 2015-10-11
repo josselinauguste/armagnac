@@ -2,7 +2,11 @@
 
 package repository
 
-import "github.com/josselinauguste/armagnac/feeds/domain"
+import (
+	"fmt"
+
+	"github.com/josselinauguste/armagnac/feeds/domain"
+)
 
 type feedRepositoryInMemory struct {
 	feeds []*domain.Feed
@@ -27,5 +31,6 @@ func (repository *feedRepositoryInMemory) Persist(feed *domain.Feed) error {
 }
 
 func init() {
+	fmt.Println("INFO: Using in-memory repository")
 	CurrentFeedRepository = newFeedRepositoryInMemory()
 }

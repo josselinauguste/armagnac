@@ -1,8 +1,11 @@
 package query
 
 import (
+	"fmt"
+
 	"github.com/josselinauguste/armagnac/feeds/domain"
 )
+
 import "github.com/josselinauguste/armagnac/feeds/repository"
 
 type NewItemsQuery struct {
@@ -46,8 +49,8 @@ func (query *NewItemsQuery) getFeedItems(feed *domain.Feed, ch chan message) {
 	getter := newFeedGetter(feed)
 	newItems, err := getter.getNewItems()
 	if err != nil {
-		//TODO log
-		//todo use mutex release instead of empty message
+		fmt.Println("ERROR: can't get feed %v: %#v", feed.Uri, err.Error())
+		//TODO use mutex release instead of empty message
 		ch <- message{}
 	} else {
 		ch <- message{feed, newItems}

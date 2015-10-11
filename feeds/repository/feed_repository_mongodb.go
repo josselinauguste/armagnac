@@ -3,6 +3,7 @@
 package repository
 
 import (
+	"fmt"
 	"os"
 
 	"labix.org/v2/mgo"
@@ -22,7 +23,7 @@ func newFeedRepositoryMongoDb() feedRepository {
 func (repository *feedRepositoryMongoDb) acquireSession() (*mgo.Session, error) {
 	session, err := mgo.Dial(os.Getenv("MONGODB_URI")) //TODO share session by creating other ones with session.Copy()
 	if err != nil {
-		//TODO log
+		fmt.Println("ERROR: can't open MongoDB connection: %#v", err.Error())
 		return nil, err
 	}
 	session.SetSafe(&mgo.Safe{})
@@ -33,7 +34,6 @@ func (repository *feedRepositoryMongoDb) acquireSession() (*mgo.Session, error) 
 func (repository *feedRepositoryMongoDb) GetAll() ([]*domain.Feed, error) {
 	session, err := repository.acquireSession()
 	if err != nil {
-		//TODO log
 		return nil, err
 	}
 	defer session.Close()
@@ -46,7 +46,7 @@ func (repository *feedRepositoryMongoDb) GetAll() ([]*domain.Feed, error) {
 		feeds = append(feeds, &feed)
 	}
 	if err := iter.Close(); err != nil {
-		//TODO log
+		fmt.Println("ERROR: can't close MongoDB iterator: %#v", err.Error())
 		return feeds, err
 	}
 	return feeds, nil
@@ -59,7 +59,6 @@ func mapToFeed(feed feedDao) domain.Feed {
 func (repository *feedRepositoryMongoDb) Persist(feed *domain.Feed) error {
 	session, err := repository.acquireSession()
 	if err != nil {
-		//TODO log
 		return err
 	}
 	defer session.Close()
@@ -81,5 +80,6 @@ func mapFromFeed(feed *domain.Feed) feedDao {
 }
 
 func init() {
+	fmt.Println("INFO: Using MongoDB repository")
 	CurrentFeedRepository = newFeedRepositoryMongoDb()
 }
