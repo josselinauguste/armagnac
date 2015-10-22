@@ -44,10 +44,10 @@
   </head>
   <body>
     {{ range $feedPresenter := .Feeds }}
-      <h1>{{$feedPresenter.Feed.Title}}</h1>
-      {{ range $item := $feedPresenter.Items }}
-        <h2><<a href="{{$item.Url}}" target="_blank">{{$item.Title}}</a></h2>
-        <p>{{$item.Excerpt}}</p>
+      <h1>{{$feedPresenter.Title}}</h1>
+      {{ range $entry := $feedPresenter.Entries }}
+        <h2><a href="{{$entry.Url}}" target="_blank">{{$entry.Title}}</a></h2>
+        <p>{{$entry.Excerpt}}</p>
         <hr>
       {{ end }}
     {{ end }}

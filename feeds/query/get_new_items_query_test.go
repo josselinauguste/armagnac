@@ -14,6 +14,7 @@ func TestExecute(t *testing.T) {
 	feed := domain.NewFeed("http://lachaineguitare.com/feed/")
 	now := time.Now()
 	feed.LastSync = now.AddDate(0, 0, -5)
+	repository.CurrentFeedRepository.RemoveAll()
 	err := repository.CurrentFeedRepository.Persist(feed)
 	assert.Nil(t, err)
 	query := NewNewItemsQuery()

@@ -1,14 +1,17 @@
 package web
 
-import (
-	"github.com/josselinauguste/armagnac/feeds/domain"
-	"github.com/josselinauguste/armagnac/feeds/query"
-)
+import "github.com/josselinauguste/armagnac/feeds/query"
 
 type (
+	EntryPresenter struct {
+		Title   string
+		Excerpt string
+		Url     string
+	}
+
 	FeedPresenter struct {
-		Feed  domain.Feed
-		Items []domain.Item
+		Title   string
+		Entries []EntryPresenter
 	}
 
 	DigestPresenter struct {
@@ -17,12 +20,15 @@ type (
 )
 
 func newDigestPresenter(query query.NewItemsQuery) *DigestPresenter {
-	presenter := &DigestPresenter{}
-	presenter.Feeds = make([]FeedPresenter, 0, len(query.Feeds))
+	digestPresenter := &DigestPresenter{}
+	digestPresenter.Feeds = make([]FeedPresenter, 0, len(query.Feeds))
 	for _, feed := range query.Feeds {
-		feedPresenter := FeedPresenter{*feed, query.NewItems[feed.ID]}
-		presenter.Feeds = append(presenter.Feeds, feedPresenter)
+		feedPresenter := FeedPresenter{feed.Title, make([]EntryPresenter, 0, len(query.NewItems[feed.ID]))}
+		for _, item := range query.NewItems[feed.ID] {
+			entryPresenter := EntryPresenter{item.Title, item.Excerpt(), item.Url}
+			feedPresenter.Entries = append(feedPresenter.Entries, entryPresenter)
+		}
+		digestPresenter.Feeds = append(digestPresenter.Feeds, feedPresenter)
 	}
-
-	return presenter
+	return digestPresenter
 }

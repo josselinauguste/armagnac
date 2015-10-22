@@ -16,7 +16,7 @@ type feedGetter struct {
 func newFeedGetter(feed *domain.Feed) *feedGetter {
 	getter := new(feedGetter)
 	getter.feed = feed
-	getter.feedConnector = rss.NewWithHandlers(5, true, nil, getter)
+	getter.feedConnector = rss.NewWithHandlers(5, true, getter, getter)
 	return getter
 }
 
@@ -36,6 +36,10 @@ func (getter *feedGetter) getNewItems() ([]domain.Item, error) {
 	}
 	repository.CurrentFeedRepository.Persist(getter.feed)
 	return newItems, nil
+}
+
+func (getter *feedGetter) ProcessChannels(feed *rss.Feed, newchannels []*rss.Channel) {
+	getter.feed.Title = getter.feedConnector.Channels[0].Title
 }
 
 func (getter *feedGetter) ProcessItems(f *rss.Feed, ch *rss.Channel, newitems []*rss.Item) {

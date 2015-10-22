@@ -9,12 +9,13 @@ import (
 type Item struct {
 	Title           string
 	Url             string
-	Excerpt         string
+	Description     string
 	PublicationDate time.Time
 }
 
 func NewItemFromRss(rssItem *rss.Item) *Item {
-	item := &Item{Title: rssItem.Title, Excerpt: rssItem.Description}
+	description := extractDescription(rssItem)
+	item := &Item{Title: rssItem.Title, Description: description}
 	if len(rssItem.Links) > 0 {
 		item.Url = rssItem.Links[0].Href
 	}
@@ -24,4 +25,18 @@ func NewItemFromRss(rssItem *rss.Item) *Item {
 		item.PublicationDate = publicationDate
 	}
 	return item
+}
+
+func extractDescription(rssItem *rss.Item) string {
+	if len(rssItem.Description) > 0 {
+		return rssItem.Description
+	}
+	if rssItem.Content != nil {
+		return rssItem.Content.Text
+	}
+	return ""
+}
+
+func (item Item) Excerpt() string {
+	return item.Description
 }

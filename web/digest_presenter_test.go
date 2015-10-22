@@ -11,6 +11,7 @@ import (
 func TestNewDigestPresenter(t *testing.T) {
 	feed := domain.NewFeed("http://salut.com")
 	feed.ID = "id"
+	feed.Title = "Salut"
 	query := query.NewNewItemsQuery()
 	query.Feeds = []*domain.Feed{feed}
 	items := make([]domain.Item, 1)
@@ -20,6 +21,6 @@ func TestNewDigestPresenter(t *testing.T) {
 
 	assert.NotNil(t, presenter)
 	assert.Len(t, presenter.Feeds, 1)
-	assert.NotNil(t, presenter.Feeds[0].Feed)
-	assert.Len(t, presenter.Feeds[0].Items, 1)
+	assert.NotEmpty(t, presenter.Feeds[0].Title)
+	assert.Len(t, presenter.Feeds[0].Entries, 1)
 }

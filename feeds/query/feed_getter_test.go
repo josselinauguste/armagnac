@@ -22,4 +22,5 @@ func TestGetNewItems(t *testing.T) {
 	assert.NotEmpty(t, newItems)
 	assert.True(t, len(newItems) < 10)
 	assert.True(t, feed.LastSync.After(lastSync))
+	assert.Equal(t, "La Chaîne Guitare", feed.Title)
 }
