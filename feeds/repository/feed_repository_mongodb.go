@@ -53,7 +53,7 @@ func (repository *feedRepositoryMongoDb) GetAll() ([]*domain.Feed, error) {
 }
 
 func mapToFeed(feed feedDao) domain.Feed {
-	return domain.Feed{feed.ID.Hex(), feed.Uri, feed.LastSync}
+	return domain.Feed{feed.ID.Hex(), "", feed.Uri, feed.LastSync}
 }
 
 func (repository *feedRepositoryMongoDb) Persist(feed *domain.Feed) error {
@@ -77,6 +77,10 @@ func mapFromFeed(feed *domain.Feed) feedDao {
 		feed.ID = id.Hex()
 	}
 	return feedDao{id, feed.Uri, feed.LastSync}
+}
+
+func (repository *feedRepositoryMongoDb) RemoveAll() error {
+	return nil
 }
 
 func init() {

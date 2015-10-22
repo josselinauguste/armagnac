@@ -30,6 +30,11 @@ func (repository *feedRepositoryInMemory) Persist(feed *domain.Feed) error {
 	return nil
 }
 
+func (repository *feedRepositoryInMemory) RemoveAll() error {
+	repository.feeds = make([]*domain.Feed, 0)
+	return nil
+}
+
 func init() {
 	fmt.Println("INFO: Using in-memory repository")
 	CurrentFeedRepository = newFeedRepositoryInMemory()
