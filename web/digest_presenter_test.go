@@ -24,3 +24,9 @@ func TestNewDigestPresenter(t *testing.T) {
 	assert.NotEmpty(t, presenter.Feeds[0].Title)
 	assert.Len(t, presenter.Feeds[0].Entries, 1)
 }
+
+func TestUnescapeExcerpt(t *testing.T) {
+	presenter := EntryPresenter{"", "&lt;15", ""}
+
+	assert.Equal(t, "<15", string(presenter.FormattedExcerpt()))
+}

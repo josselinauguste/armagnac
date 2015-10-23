@@ -1,6 +1,11 @@
 package web
 
-import "github.com/josselinauguste/armagnac/feeds/query"
+import (
+	"html"
+	"html/template"
+
+	"github.com/josselinauguste/armagnac/feeds/query"
+)
 
 type (
 	EntryPresenter struct {
@@ -31,4 +36,8 @@ func newDigestPresenter(query query.NewItemsQuery) *DigestPresenter {
 		digestPresenter.Feeds = append(digestPresenter.Feeds, feedPresenter)
 	}
 	return digestPresenter
+}
+
+func (presenter EntryPresenter) FormattedExcerpt() template.HTML {
+	return template.HTML(html.UnescapeString(presenter.Excerpt))
 }

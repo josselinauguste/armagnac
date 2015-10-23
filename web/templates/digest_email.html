@@ -47,7 +47,7 @@
       <h1>{{$feedPresenter.Title}}</h1>
       {{ range $entry := $feedPresenter.Entries }}
         <h2><a href="{{$entry.Url}}" target="_blank">{{$entry.Title}}</a></h2>
-        <p>{{$entry.Excerpt}}</p>
+        <p>{{$entry.FormattedExcerpt}}</p>
         <hr>
       {{ end }}
     {{ end }}
