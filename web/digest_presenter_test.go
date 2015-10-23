@@ -30,3 +30,9 @@ func TestUnescapeExcerpt(t *testing.T) {
 
 	assert.Equal(t, "<15", string(presenter.FormattedExcerpt()))
 }
+
+func TestSanitizeExcerpt(t *testing.T) {
+	presenter := EntryPresenter{"", "&lt;a href=\"javascript:alert('XSS1')\" onmouseover=\"alert('XSS2')\"&gt;XSS&lt;/a&gt;", ""}
+
+	assert.Equal(t, "XSS", string(presenter.FormattedExcerpt()))
+}

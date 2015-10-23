@@ -5,6 +5,7 @@ import (
 	"html/template"
 
 	"github.com/josselinauguste/armagnac/feeds/query"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 type (
@@ -39,5 +40,9 @@ func newDigestPresenter(query query.NewItemsQuery) *DigestPresenter {
 }
 
 func (presenter EntryPresenter) FormattedExcerpt() template.HTML {
-	return template.HTML(html.UnescapeString(presenter.Excerpt))
+	unescaped := html.UnescapeString(presenter.Excerpt)
+	p := bluemonday.UGCPolicy()
+	sanitized := p.Sanitize(unescaped)
+	unescaped = html.UnescapeString(sanitized)
+	return template.HTML(unescaped)
 }
