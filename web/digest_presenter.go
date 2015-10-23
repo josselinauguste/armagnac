@@ -39,6 +39,13 @@ func newDigestPresenter(query query.NewItemsQuery) *DigestPresenter {
 	return digestPresenter
 }
 
+func (presenter EntryPresenter) FormattedTitle() string {
+	if len(presenter.Title) == 0 {
+		return "Sans titre"
+	}
+	return presenter.Title
+}
+
 func (presenter EntryPresenter) FormattedExcerpt() template.HTML {
 	unescaped := html.UnescapeString(presenter.Excerpt)
 	p := bluemonday.UGCPolicy()

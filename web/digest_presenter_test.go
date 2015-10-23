@@ -25,6 +25,12 @@ func TestNewDigestPresenter(t *testing.T) {
 	assert.Len(t, presenter.Feeds[0].Entries, 1)
 }
 
+func TestProvideDefaultTitle(t *testing.T) {
+	presenter := EntryPresenter{"", "&lt;15", ""}
+
+	assert.Equal(t, "Sans titre", presenter.FormattedTitle())
+}
+
 func TestUnescapeExcerpt(t *testing.T) {
 	presenter := EntryPresenter{"", "&lt;15", ""}
 
