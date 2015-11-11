@@ -7,7 +7,8 @@ import (
 
 func RegisterRoutes() *mux.Router {
 	bus := getBus()
-	digestResource := newDigestResource(bus)
+	mailer := htmlMailer{}
+	digestResource := newDigestResource(bus, mailer)
 	r := mux.NewRouter().StrictSlash(false)
 	digests := r.Path("/digests").Subrouter()
 	digests.Methods("POST").HandlerFunc(digestResource.createAndSendDigestHandler)
