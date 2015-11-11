@@ -23,7 +23,7 @@ func newFeedRepositoryMongoDb() feedRepository {
 func (repository *feedRepositoryMongoDb) acquireSession() (*mgo.Session, error) {
 	session, err := mgo.Dial(os.Getenv("MONGODB_URI")) //TODO share session by creating other ones with session.Copy()
 	if err != nil {
-		fmt.Println("ERROR: can't open MongoDB connection: %#v", err.Error())
+		fmt.Printf("ERROR: can't open MongoDB connection: %#v\n", err.Error())
 		return nil, err
 	}
 	session.SetSafe(&mgo.Safe{})
@@ -46,7 +46,7 @@ func (repository *feedRepositoryMongoDb) GetAll() ([]*domain.Feed, error) {
 		feeds = append(feeds, &feed)
 	}
 	if err := iter.Close(); err != nil {
-		fmt.Println("ERROR: can't close MongoDB iterator: %#v", err.Error())
+		fmt.Printf("ERROR: can't close MongoDB iterator: %#v\n", err.Error())
 		return feeds, err
 	}
 	return feeds, nil
