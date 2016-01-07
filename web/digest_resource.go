@@ -3,11 +3,7 @@ package web
 import (
 	"bytes"
 	"fmt"
-	"html/template"
 	"net/http"
-	"path"
-	"path/filepath"
-	"runtime"
 
 	"github.com/josselinauguste/armagnac/feeds/query"
 	"github.com/josselinauguste/magicbus"
@@ -19,13 +15,6 @@ type digestResource struct {
 }
 
 var digestTemplate = loadTemplate("digest_email.html")
-
-func loadTemplate(name string) *template.Template {
-	_, executedFileName, _, _ := runtime.Caller(1)
-	rootPath := path.Dir(executedFileName)
-	templatePath := filepath.Join(rootPath, "templates", name)
-	return template.Must(template.ParseFiles(templatePath))
-}
 
 func newDigestResource(bus magicbus.Bus, mailer mailer) *digestResource {
 	return &digestResource{bus, mailer}
