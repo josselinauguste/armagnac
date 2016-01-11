@@ -18,7 +18,7 @@ func (htmlMailer) sendMail(recipient string, subject string, content []byte) err
 	err := smtp.SendMail(
 		getServerAddress(),
 		getAuth(),
-		"alice@armagnac.io",
+		os.Getenv("SENDER_EMAIL"),
 		[]string{recipient},
 		msg)
 	return err
