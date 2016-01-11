@@ -16,7 +16,7 @@ func (htmlMailer) sendMail(recipient string, subject string, content []byte) err
 	headers := getHeaders(subject)
 	msg := append([]byte(headers), content...)
 	err := smtp.SendMail(
-		fmt.Sprintf("%v:%v", os.Getenv("SMTP_SERVER_URL"), os.Getenv("SMTP_SERVER_PORT")),
+		getServerAddress(),
 		getAuth(),
 		"alice@armagnac.io",
 		[]string{recipient},
@@ -30,7 +30,22 @@ func getHeaders(subject string) string {
 	return subjectHeader + mimeHeader
 }
 
+func getServerAddress() string {
+	smtpUrl := os.Getenv("SMTP_SERVER_URL")
+	if smtpUrl == "" {
+		smtpUrl = "localhost"
+	}
+	smtpPort := os.Getenv("SMTP_SERVER_PORT")
+	if smtpPort == "" {
+		smtpPort = "25"
+	}
+	return fmt.Sprintf("%v:%v", smtpUrl, smtpPort)
+}
+
 func getAuth() smtp.Auth {
+	if os.Getenv("SMTP_SERVER_LOGIN") == "" {
+		return nil
+	}
 	return smtp.PlainAuth(
 		"",
 		os.Getenv("SMTP_SERVER_LOGIN"),
