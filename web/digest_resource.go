@@ -44,6 +44,9 @@ func (resource digestResource) createDigest() ([]byte, error) {
 	}
 	presenter := newDigestPresenter(*query)
 	buffer := new(bytes.Buffer)
-	digestTemplate.Execute(buffer, presenter)
+	err = digestTemplate.Execute(buffer, presenter)
+	if err != nil {
+		return nil, fmt.Errorf("error while generating reponse body: %#v\n", err.Error())
+	}
 	return buffer.Bytes(), nil
 }
