@@ -12,27 +12,22 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/josselinauguste/armagnac/feeds/domain"
+	"time"
 )
 
 type FakeBus struct {
 	mock.Mock
+	mockedFeeds []*domain.Feed
+	mockedNewItems map[string][]domain.Item
 }
 
 func (m *FakeBus) Send(command magicbus.Command) error {
 	args := m.Called(command)
+	query := command.(*query.NewItemsQuery)
+	query.Feeds = m.mockedFeeds
+	query.NewItems = m.mockedNewItems
 	return args.Error(0)
-}
-
-func TestCreateDigest(t *testing.T) {
-	fakeBus := new(FakeBus)
-	fakeBus.On("Send", query.NewNewItemsQuery()).Return(nil)
-	resource := newDigestResource(fakeBus, new(FakeMailer))
-
-	digest, err := resource.createDigest()
-
-	assert.NotEmpty(t, digest)
-	assert.Nil(t, err)
-	fakeBus.AssertExpectations(t)
 }
 
 type FakeMailer struct {
@@ -42,16 +37,18 @@ type FakeMailer struct {
 
 func (m *FakeMailer) sendMail(recipient string, subject string, content []byte) error {
 	m.content = content
-	args := m.Called(recipient, subject, nil)
+	args := m.Called(recipient, subject, content)
 	return args.Error(0)
 }
 
 func TestCreateAndSendDigest(t *testing.T) {
 	fakeMailer := new(FakeMailer)
-	fakeMailer.On("sendMail", "jauguste@iblop.net", "A week digested", nil).Return(nil)
+	fakeMailer.On("sendMail", "jauguste@iblop.net", "A week digested", mock.AnythingOfType("[]uint8")).Return(nil)
+	feeds, items := createData()
 	fakeBus := new(FakeBus)
-	query := query.NewNewItemsQuery()
-	fakeBus.On("Send", query).Return(nil)
+	fakeBus.mockedFeeds = feeds
+	fakeBus.mockedNewItems = items
+	fakeBus.On("Send", mock.AnythingOfType("*query.NewItemsQuery")).Return(nil)
 	resource := newDigestResource(fakeBus, fakeMailer)
 	request, _ := http.NewRequest("POST", "/digests", strings.NewReader(``))
 	response := NewFakeResponse(t)
@@ -61,13 +58,32 @@ func TestCreateAndSendDigest(t *testing.T) {
 	response.AssertStatus(http.StatusOK)
 	fakeBus.AssertExpectations(t)
 	fakeMailer.AssertExpectations(t)
+	digest := string(fakeMailer.content)
+	item := items[feeds[0].ID][0]
+	assert.Contains(t, digest, item.Title)
+	assert.Contains(t, digest, item.Description)
+}
+
+func createData() ([]*domain.Feed, map[string][]domain.Item) {
+	items := make(map[string][]domain.Item)
+	feed := domain.NewFeed("http://test.com")
+	items[feed.ID] = make([]domain.Item, 0)
+	item := domain.Item{
+		Title:           "title",
+		Url:             "http://url.com",
+		Description:     "description",
+		PublicationDate: time.Now(),
+	}
+	items[feed.ID] = append(items["id"], item)
+	feeds := make([]*domain.Feed, 0)
+	feeds = append(feeds, feed)
+	return  feeds, items
 }
 
 func TestBusErrorReturns500(t *testing.T) {
 	fakeMailer := new(FakeMailer)
 	fakeBus := new(FakeBus)
-	query := query.NewNewItemsQuery()
-	fakeBus.On("Send", query).Return(errors.New(""))
+	fakeBus.On("Send", mock.AnythingOfType("*query.NewItemsQuery")).Return(errors.New(""))
 	resource := newDigestResource(fakeBus, fakeMailer)
 	request, _ := http.NewRequest("POST", "/digests", strings.NewReader(``))
 	response := NewFakeResponse(t)
@@ -79,10 +95,9 @@ func TestBusErrorReturns500(t *testing.T) {
 
 func TestErrorOnEmailSendReturns500(t *testing.T) {
 	fakeMailer := new(FakeMailer)
-	fakeMailer.On("sendMail", "jauguste@iblop.net", "A week digested", nil).Return(errors.New(""))
+	fakeMailer.On("sendMail", "jauguste@iblop.net", "A week digested", mock.AnythingOfType("[]uint8")).Return(errors.New(""))
 	fakeBus := new(FakeBus)
-	query := query.NewNewItemsQuery()
-	fakeBus.On("Send", query).Return(nil)
+	fakeBus.On("Send", mock.AnythingOfType("*query.NewItemsQuery")).Return(nil)
 	resource := newDigestResource(fakeBus, fakeMailer)
 	request, _ := http.NewRequest("POST", "/digests", strings.NewReader(``))
 	response := NewFakeResponse(t)
@@ -97,8 +112,7 @@ func TestErrorOnTemplatingReturns500(t *testing.T) {
 	fakeMailer := new(FakeMailer)
 	fakeMailer.On("sendMail", "jauguste@iblop.net", "A week digested", nil).Return(nil)
 	fakeBus := new(FakeBus)
-	query := query.NewNewItemsQuery()
-	fakeBus.On("Send", query).Return(nil)
+	fakeBus.On("Send", mock.AnythingOfType("*query.NewItemsQuery")).Return(nil)
 	resource := newDigestResource(fakeBus, fakeMailer)
 	request, _ := http.NewRequest("POST", "/digests", strings.NewReader(``))
 	response := NewFakeResponse(t)
