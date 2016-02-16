@@ -1,6 +1,8 @@
 package web
 
 import (
+	"errors"
+	"html/template"
 	"net/http"
 	"strings"
 	"testing"
@@ -35,9 +37,11 @@ func TestCreateDigest(t *testing.T) {
 
 type FakeMailer struct {
 	mock.Mock
+	content []byte
 }
 
 func (m *FakeMailer) sendMail(recipient string, subject string, content []byte) error {
+	m.content = content
 	args := m.Called(recipient, subject, nil)
 	return args.Error(0)
 }
@@ -46,7 +50,8 @@ func TestCreateAndSendDigest(t *testing.T) {
 	fakeMailer := new(FakeMailer)
 	fakeMailer.On("sendMail", "jauguste@iblop.net", "A week digested", nil).Return(nil)
 	fakeBus := new(FakeBus)
-	fakeBus.On("Send", query.NewNewItemsQuery()).Return(nil)
+	query := query.NewNewItemsQuery()
+	fakeBus.On("Send", query).Return(nil)
 	resource := newDigestResource(fakeBus, fakeMailer)
 	request, _ := http.NewRequest("POST", "/digests", strings.NewReader(``))
 	response := NewFakeResponse(t)
@@ -54,5 +59,51 @@ func TestCreateAndSendDigest(t *testing.T) {
 	resource.createAndSendDigestHandler(response, request)
 
 	response.AssertStatus(http.StatusOK)
+	fakeBus.AssertExpectations(t)
 	fakeMailer.AssertExpectations(t)
+}
+
+func TestBusErrorReturns500(t *testing.T) {
+	fakeMailer := new(FakeMailer)
+	fakeBus := new(FakeBus)
+	query := query.NewNewItemsQuery()
+	fakeBus.On("Send", query).Return(errors.New(""))
+	resource := newDigestResource(fakeBus, fakeMailer)
+	request, _ := http.NewRequest("POST", "/digests", strings.NewReader(``))
+	response := NewFakeResponse(t)
+
+	resource.createAndSendDigestHandler(response, request)
+
+	response.AssertStatus(http.StatusInternalServerError)
+}
+
+func TestErrorOnEmailSendReturns500(t *testing.T) {
+	fakeMailer := new(FakeMailer)
+	fakeMailer.On("sendMail", "jauguste@iblop.net", "A week digested", nil).Return(errors.New(""))
+	fakeBus := new(FakeBus)
+	query := query.NewNewItemsQuery()
+	fakeBus.On("Send", query).Return(nil)
+	resource := newDigestResource(fakeBus, fakeMailer)
+	request, _ := http.NewRequest("POST", "/digests", strings.NewReader(``))
+	response := NewFakeResponse(t)
+
+	resource.createAndSendDigestHandler(response, request)
+
+	response.AssertStatus(http.StatusInternalServerError)
+}
+
+func TestErrorOnTemplatingReturns500(t *testing.T) {
+	digestTemplate, _ = template.New("test").Parse("{{.Count}} is not a valid template")
+	fakeMailer := new(FakeMailer)
+	fakeMailer.On("sendMail", "jauguste@iblop.net", "A week digested", nil).Return(nil)
+	fakeBus := new(FakeBus)
+	query := query.NewNewItemsQuery()
+	fakeBus.On("Send", query).Return(nil)
+	resource := newDigestResource(fakeBus, fakeMailer)
+	request, _ := http.NewRequest("POST", "/digests", strings.NewReader(``))
+	response := NewFakeResponse(t)
+
+	resource.createAndSendDigestHandler(response, request)
+
+	response.AssertStatus(http.StatusInternalServerError)
 }

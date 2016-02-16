@@ -1,8 +1,9 @@
 package web
+
 import (
 	"html/template"
-	"path/filepath"
 	"os"
+	"path/filepath"
 )
 
 func loadTemplate(name string) *template.Template {
